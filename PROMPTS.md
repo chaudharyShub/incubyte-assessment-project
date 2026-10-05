@@ -69,3 +69,19 @@ A verbatim record of the prompts given to the AI tool (Claude Code) while buildi
 ## Prompt 8 — 2026-10-05
 
 > yes, proceed
+
+## Prompt 9 — 2026-10-05
+
+> I have put the keys and required creds in the /server/.env file.
+
+## Prompt 10 — 2026-10-05
+
+> I have updated the project's password and removed @ from it. And for the pooler string, in the supabase dashboard inside "Direct, Connection string" I can see two types of connection methods, "transaction pooler" and "session pooler", which one is required for us ?
+
+## Prompt 11 — 2026-10-05
+
+> I have changed DATABASE_URL value to session pooler string and also added new varialbe DATABASE_URL_TRANSACTION_POOLER as well.
+
+## Prompt 12 — 2026-10-05
+
+> Go ahead and commit. HR manager's account: user = helloworld@demo.com, password = [redacted]. Choose the exahcnge rate according to you, no need to take stress for that.

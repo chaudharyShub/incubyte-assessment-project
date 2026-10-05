@@ -73,7 +73,7 @@ erDiagram
     currencies ||--o{ salary_history : "paid in"
 
     users {
-        bigint id PK
+        int id PK
         text email UK
         text password_hash
         text name
@@ -98,7 +98,7 @@ erDiagram
         smallint rank
     }
     employees {
-        bigint id PK
+        int id PK
         text name
         text email UK
         char2 country_code FK
@@ -112,8 +112,8 @@ erDiagram
         timestamptz updated_at
     }
     salary_history {
-        bigint id PK
-        bigint employee_id FK
+        int id PK
+        int employee_id FK
         numeric amount
         char3 currency_code FK
         date effective_date
@@ -136,6 +136,7 @@ erDiagram
 - `employees.status` is either `active` or `inactive`.
 - Employee email is unique regardless of letter case.
 - One salary record per employee per effective date.
+- Row level security is enabled on every table with no policies. The API connects as the table owner and is unaffected; every other role, including those behind Supabase's auto-generated REST API, is shut out.
 
 **Current salary and history**
 
