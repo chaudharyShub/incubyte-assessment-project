@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+type EnvSource = Record<string, string | undefined>;
+
 const schemaName = z
   .string()
   .regex(/^[a-z_][a-z0-9_]*$/, 'must be a lowercase PostgreSQL identifier');
@@ -12,14 +14,30 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3000),
 });
 
-export type Env = z.infer<typeof envSchema>;
+const seedEnvSchema = z.object({
+  SEED_HR_EMAIL: z.email({ error: 'must be an email address' }),
+  SEED_HR_PASSWORD: z.string({ error: 'is required' }).min(8, 'must be at least 8 characters long'),
+  SEED_HR_NAME: z.string().min(1).default('HR Manager'),
+});
 
-/** Reads and validates configuration, failing with one message that names every bad variable. */
-export function loadEnv(source: Record<string, string | undefined> = process.env): Env {
-  const result = envSchema.safeParse(source);
+export type Env = z.infer<typeof envSchema>;
+export type SeedEnv = z.infer<typeof seedEnvSchema>;
+
+function parse<T>(schema: z.ZodType<T>, source: EnvSource): T {
+  const result = schema.safeParse(source);
   if (!result.success) {
     const problems = result.error.issues.map((issue) => `${issue.path.join('.')} ${issue.message}`);
     throw new Error(`Invalid environment configuration: ${problems.join('; ')}`);
   }
   return result.data;
+}
+
+/** Reads and validates configuration, failing with one message that names every bad variable. */
+export function loadEnv(source: EnvSource = process.env): Env {
+  return parse(envSchema, source);
+}
+
+/** The HR Manager account the seed script creates. Only the seed script needs these. */
+export function loadSeedEnv(source: EnvSource = process.env): SeedEnv {
+  return parse(seedEnvSchema, source);
 }

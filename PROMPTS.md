@@ -85,3 +85,7 @@ A verbatim record of the prompts given to the AI tool (Claude Code) while buildi
 ## Prompt 12 — 2026-10-05
 
 > Go ahead and commit. HR manager's account: user = helloworld@demo.com, password = [redacted]. Choose the exahcnge rate according to you, no need to take stress for that.
+
+## Prompt 13 — 2026-10-05
+
+> yes, proceed
