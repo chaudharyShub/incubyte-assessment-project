@@ -95,3 +95,7 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 ## Prompt 14 — 2026-10-05
 
 > Handle that password from commit and prompts.md file. Then you can proceed further.
+
+## Prompt 15 — 2026-10-05
+
+> yes, proceed. And the project region thing, as we can't change the region of an existing supabase project, I will create another project in mumbai region for which you have to seed the data again. is it okay ?

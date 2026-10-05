@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createTestApp } from '../test/test-app.js';
+import { createTestApp, sessionCookie } from '../test/test-app.js';
 import { AppError, errorHandler } from './errors.js';
 
 function appThatThrows(error: unknown) {
@@ -19,7 +19,9 @@ describe('error handling', () => {
   });
 
   it('returns 404 in the standard error shape for an unknown route', async () => {
-    const response = await request(createTestApp()).get('/api/does-not-exist');
+    const response = await request(createTestApp())
+      .get('/api/does-not-exist')
+      .set('Cookie', sessionCookie());
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
