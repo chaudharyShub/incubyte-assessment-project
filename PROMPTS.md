@@ -36,3 +36,28 @@ A verbatim record of the prompts given to the AI tool (Claude Code) while buildi
 | Each salary is stored in the employee's local currency. Which single currency should org-wide and cross-country figures be converted into? | INR |
 | Where should the exchange rates come from? | Fixed seeded rates |
 | Tailwind CSS is a styling framework rather than a component library, and the brief asks for a component library. How should the components be built? | Tailwind + shadcn/ui |
+
+## Prompt 5 — 2026-10-05
+
+> I have read the requirements.md file. Go ahead.
+
+### Answers to follow-up questions — 2026-10-05
+
+| Question asked by the AI | My answer |
+|---|---|
+| What should each salary change record store? (Amount, date and reason / Amount and date only) | Amount and date only |
+| Which countries (each with its own currency) should the seed data use? | 5 countries: India (INR), United States (USD), United Kingdom (GBP), Germany (EUR), Singapore (SGD) |
+| Which departments and levels should the seed data and filters use? | 5 depts, 4 levels. Departments: Engineering, Sales, Marketing, Finance, Human Resources. Levels: Junior, Mid, Senior, Manager |
+
+## Prompt 6 — 2026-10-05
+
+> 6. go with the libraries you have mentioned in this point. 7. I would like to go with supabase database.
+
+### Answers to follow-up questions — 2026-10-05
+
+| Question asked by the AI | My answer |
+|---|---|
+| What period does a salary amount cover? (Annual / Monthly) | Monthly |
+| Which employees should the insights count? (Active only / Active and inactive) | Active only |
+| What should happen to the country field after an employee is created? | Fixed after creation |
+| Which of these remaining points do you approve? (Salary change date rule / Sort salary by INR / Supabase for local dev too / Commit the design docs) | Sort salary by INR, Supabase for local dev too, Commit the design docs, Salary change date rule |
