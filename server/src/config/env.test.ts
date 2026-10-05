@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadEnv, loadSeedEnv } from './env.js';
+import { loadAuthEnv, loadEnv, loadSeedEnv } from './env.js';
 
 const DATABASE_URL = 'postgresql://user:secret@db.example.com:5432/postgres';
 
@@ -59,6 +59,24 @@ describe('loadSeedEnv', () => {
   it('fails when the password is shorter than 8 characters', () => {
     expect(() => loadSeedEnv({ ...SEED, SEED_HR_PASSWORD: 'short' })).toThrow(
       'SEED_HR_PASSWORD must be at least 8 characters long',
+    );
+  });
+});
+
+describe('loadAuthEnv', () => {
+  it('reads the session secret', () => {
+    const JWT_SECRET = '0123456789abcdef0123456789abcdef';
+
+    expect(loadAuthEnv({ JWT_SECRET })).toEqual({ JWT_SECRET });
+  });
+
+  it('fails when the secret is missing', () => {
+    expect(() => loadAuthEnv({})).toThrow('JWT_SECRET is required');
+  });
+
+  it('fails when the secret is too short to be safe', () => {
+    expect(() => loadAuthEnv({ JWT_SECRET: 'short' })).toThrow(
+      'JWT_SECRET must be at least 32 characters long',
     );
   });
 });

@@ -1,7 +1,20 @@
 import { createApp } from './app.js';
+import { loadAuthEnv, loadEnv } from './config/env.js';
+import { createPool } from './db/pool.js';
+import { createAuthRepository } from './modules/auth/auth.repository.js';
 
-const port = Number(process.env.PORT ?? 3000);
+const env = loadEnv();
+const authEnv = loadAuthEnv();
+const pool = createPool({ connectionString: env.DATABASE_URL, schema: env.DATABASE_SCHEMA });
 
-createApp().listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
+const app = createApp({
+  authRepository: createAuthRepository(pool),
+  session: {
+    jwtSecret: authEnv.JWT_SECRET,
+    secureCookies: process.env.NODE_ENV === 'production',
+  },
+});
+
+app.listen(env.PORT, () => {
+  console.log(`API listening on http://localhost:${env.PORT}`);
 });

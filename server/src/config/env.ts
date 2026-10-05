@@ -20,7 +20,12 @@ const seedEnvSchema = z.object({
   SEED_HR_NAME: z.string().min(1).default('HR Manager'),
 });
 
+const authEnvSchema = z.object({
+  JWT_SECRET: z.string({ error: 'is required' }).min(32, 'must be at least 32 characters long'),
+});
+
 export type Env = z.infer<typeof envSchema>;
+export type AuthEnv = z.infer<typeof authEnvSchema>;
 export type SeedEnv = z.infer<typeof seedEnvSchema>;
 
 function parse<T>(schema: z.ZodType<T>, source: EnvSource): T {
@@ -40,4 +45,9 @@ export function loadEnv(source: EnvSource = process.env): Env {
 /** The HR Manager account the seed script creates. Only the seed script needs these. */
 export function loadSeedEnv(source: EnvSource = process.env): SeedEnv {
   return parse(seedEnvSchema, source);
+}
+
+/** The secret that signs session cookies. Only the API server needs it. */
+export function loadAuthEnv(source: EnvSource = process.env): AuthEnv {
+  return parse(authEnvSchema, source);
 }

@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createApp } from '../app.js';
+import { createTestApp } from '../test/test-app.js';
 import { AppError, errorHandler } from './errors.js';
 
 function appThatThrows(error: unknown) {
@@ -19,7 +19,7 @@ describe('error handling', () => {
   });
 
   it('returns 404 in the standard error shape for an unknown route', async () => {
-    const response = await request(createApp()).get('/api/does-not-exist');
+    const response = await request(createTestApp()).get('/api/does-not-exist');
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
@@ -28,7 +28,7 @@ describe('error handling', () => {
   });
 
   it('returns 400 when the request body is not valid JSON', async () => {
-    const response = await request(createApp())
+    const response = await request(createTestApp())
       .post('/api/anything')
       .set('Content-Type', 'application/json')
       .send('{ not json');

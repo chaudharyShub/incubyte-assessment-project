@@ -86,6 +86,12 @@ A verbatim record of the prompts given to the AI tool (Claude Code) while buildi
 
 > Go ahead and commit. HR manager's account: user = helloworld@demo.com, password = [redacted]. Choose the exahcnge rate according to you, no need to take stress for that.
 
+_Note: this prompt is verbatim except for the password, which was redacted at my request (see Prompt 14)._
+
 ## Prompt 13 — 2026-10-05
 
 > yes, proceed
+
+## Prompt 14 — 2026-10-05
+
+> Handle that password from commit and prompts.md file. Then you can proceed further.
