@@ -61,3 +61,11 @@ A verbatim record of the prompts given to the AI tool (Claude Code) while buildi
 | Which employees should the insights count? (Active only / Active and inactive) | Active only |
 | What should happen to the country field after an employee is created? | Fixed after creation |
 | Which of these remaining points do you approve? (Salary change date rule / Sort salary by INR / Supabase for local dev too / Commit the design docs) | Sort salary by INR, Supabase for local dev too, Commit the design docs, Salary change date rule |
+
+## Prompt 7 — 2026-10-05
+
+> 1. Two project setup. 2. I am setting up supabase project, meanwhile you can go ahead with the 3rd point
+
+## Prompt 8 — 2026-10-05
+
+> yes, proceed

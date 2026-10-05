@@ -1,6 +1,6 @@
 # Architecture and Design
 
-**Status:** Draft for review · **Date:** 2026-10-05
+**Status:** Approved · **Date:** 2026-10-05
 
 This document turns [REQUIREMENTS.md](REQUIREMENTS.md) into a design: how the system is put together, what the data looks like, and what the API exposes. The reasoning behind the choices is in [DECISIONS.md](DECISIONS.md).
 

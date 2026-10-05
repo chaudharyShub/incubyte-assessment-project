@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+.vercel/
+*.log

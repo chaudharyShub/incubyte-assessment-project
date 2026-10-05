@@ -1,6 +1,6 @@
 # Decisions and Trade-offs
 
-**Status:** Draft for review · **Date:** 2026-10-05
+**Status:** Approved · **Date:** 2026-10-05
 
 Each entry records a choice, why it was made, and what it costs. Product decisions were made by the project owner; technical ones are proposed in [ARCHITECTURE.md](ARCHITECTURE.md).
 
