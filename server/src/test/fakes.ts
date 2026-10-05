@@ -7,6 +7,12 @@ import type {
   NewEmployee,
   SalaryRecord,
 } from '../modules/employees/employee.types.js';
+import type {
+  InsightsGroupBy,
+  InsightsRepository,
+  InsightsSummary,
+  SalaryStatsGroup,
+} from '../modules/insights/insights.repository.js';
 import type { Meta, MetaRepository } from '../modules/meta/meta.repository.js';
 
 /** An AuthRepository backed by an array, for tests that must not touch a database. */
@@ -150,6 +156,21 @@ export function createFakeEmployeeRepository(): FakeEmployeeRepository {
     async addSalaryChange(employeeId, change) {
       addRecord(employeeId, change.amount, change.effectiveDate);
       employees.get(employeeId)!.salary = change.amount;
+    },
+  };
+}
+
+/** An InsightsRepository that returns the figures it is given. The arithmetic is SQL, covered by the integration tests. */
+export function createFakeInsightsRepository(
+  summary: InsightsSummary = { headcount: 0, totalPayrollInr: '0.00' },
+  stats: Partial<Record<InsightsGroupBy, SalaryStatsGroup[]>> = {},
+): InsightsRepository {
+  return {
+    async summary() {
+      return summary;
+    },
+    async salaryStats(groupBy) {
+      return stats[groupBy] ?? [];
     },
   };
 }

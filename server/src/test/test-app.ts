@@ -3,6 +3,7 @@ import { signSessionToken } from '../modules/auth/session-token.js';
 import {
   createFakeAuthRepository,
   createFakeEmployeeRepository,
+  createFakeInsightsRepository,
   createFakeMetaRepository,
 } from './fakes.js';
 
@@ -16,6 +17,7 @@ export function createTestApp(overrides: Partial<AppDependencies> = {}) {
   return createApp({
     authRepository: createFakeAuthRepository(),
     employeeRepository: createFakeEmployeeRepository(),
+    insightsRepository: createFakeInsightsRepository(),
     metaRepository: createFakeMetaRepository(),
     session: { jwtSecret: TEST_JWT_SECRET, secureCookies: false },
     now: () => TEST_NOW,

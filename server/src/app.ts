@@ -8,6 +8,8 @@ import { createAuthService } from './modules/auth/auth.service.js';
 import type { EmployeeRepository } from './modules/employees/employee.repository.js';
 import { createEmployeeRouter } from './modules/employees/employee.routes.js';
 import { createEmployeeService } from './modules/employees/employee.service.js';
+import type { InsightsRepository } from './modules/insights/insights.repository.js';
+import { createInsightsRouter } from './modules/insights/insights.routes.js';
 import type { MetaRepository } from './modules/meta/meta.repository.js';
 import { createMetaRouter } from './modules/meta/meta.routes.js';
 
@@ -15,6 +17,7 @@ import { createMetaRouter } from './modules/meta/meta.routes.js';
 export interface AppDependencies {
   authRepository: AuthRepository;
   employeeRepository: EmployeeRepository;
+  insightsRepository: InsightsRepository;
   metaRepository: MetaRepository;
   session: SessionConfig;
   /** The current time. Defaults to the system clock. */
@@ -25,6 +28,7 @@ export interface AppDependencies {
 export function createApp({
   authRepository,
   employeeRepository,
+  insightsRepository,
   metaRepository,
   session,
   now = () => new Date(),
@@ -46,6 +50,7 @@ export function createApp({
       createEmployeeService({ employees: employeeRepository, meta: metaRepository, now }),
     ),
   );
+  api.use('/insights', createInsightsRouter(insightsRepository));
   app.use('/api', api);
 
   app.use(notFoundHandler);

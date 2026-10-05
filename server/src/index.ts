@@ -3,6 +3,7 @@ import { loadAuthEnv, loadEnv } from './config/env.js';
 import { createPool } from './db/pool.js';
 import { createAuthRepository } from './modules/auth/auth.repository.js';
 import { createEmployeeRepository } from './modules/employees/employee.repository.js';
+import { createInsightsRepository } from './modules/insights/insights.repository.js';
 import { createMetaRepository } from './modules/meta/meta.repository.js';
 
 const env = loadEnv();
@@ -12,6 +13,7 @@ const pool = createPool({ connectionString: env.DATABASE_URL, schema: env.DATABA
 const app = createApp({
   authRepository: createAuthRepository(pool),
   employeeRepository: createEmployeeRepository(pool),
+  insightsRepository: createInsightsRepository(pool),
   metaRepository: createMetaRepository(pool),
   session: {
     jwtSecret: authEnv.JWT_SECRET,

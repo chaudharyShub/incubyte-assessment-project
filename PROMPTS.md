@@ -99,3 +99,7 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 ## Prompt 15 — 2026-10-05
 
 > yes, proceed. And the project region thing, as we can't change the region of an existing supabase project, I will create another project in mumbai region for which you have to seed the data again. is it okay ?
+
+## Prompt 16 — 2026-10-06
+
+> I have created new project in mumbai region and updated the .env file with new urls as well. I have read those 5 rules and allow you to proceed with them and go ahead
