@@ -118,12 +118,16 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 
 ## Prompt 20 — 2026-10-06
 
-> okay. I have also tested the project running locally and it's looking good to me. Now, let's begin with the deployment.
+> okay. I have also tested the project running locally and it's looking good to me. Now, let's move forward
 
 ## Prompt 21 — 2026-10-06
 
-> okay. I have also tested the project running locally and it's looking good to me. Now, let's move forward
+> yes, after the commits I will provide the git repo and my vercel keys and urls for the deployment as you ask.
 
 ## Prompt 22 — 2026-10-06
 
-> yes, after the commits I will provide the git repo and my vercel keys and urls for the deployment as you ask.
+> yes sure
+
+## Prompt 23 — 2026-10-06
+
+> I have created a github repo and connected it to vercel, we are good to do for the deployment. Let's proceed.

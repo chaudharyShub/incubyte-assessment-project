@@ -41,13 +41,16 @@ flowchart LR
 /server        Express + TypeScript API
   src/
     app.ts         builds the Express app (no listen, so tests and Vercel can import it)
+    bootstrap.ts   wires the app to the real database from environment variables
     index.ts       starts the server locally
     config/        environment parsing
     db/            connection pool, migrations
     middleware/    auth, validation, error handling
     modules/       auth, employees, salaries, insights, meta
     seed/          seed script and data generators
+/api           Vercel serverless entry that hands /api requests to the Express app
 /docs          requirements, architecture, decisions
+vercel.json    Vercel build settings and routing
 PROMPTS.md     log of AI prompts
 ```
 
