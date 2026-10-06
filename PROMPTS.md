@@ -94,7 +94,7 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 
 ## Prompt 14 — 2026-10-05
 
-> Handle that password from commit and prompts.md file. Then you can proceed further.
+> Remove the password from commit and prompts.md file. Then you can proceed further.
 
 ## Prompt 15 — 2026-10-05
 
@@ -143,3 +143,7 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 ## Prompt 26 — 2026-10-06
 
 > I would like you to make some changes as well in the application. The app is working but I am feeling like something is missing. First of all add a README file. Then add an employee's salary change history chart in the employee's detail page plus add a peers comparison component showing salary difference against other employees in the same country, like what is the lowest/highest/middle salary range and where does that employee lie.
+
+## Prompt 27 — 2026-10-06
+
+> Add show/hide password eye icon on login page, - Add "Reset Filters" button on Employees page, - When user click on brand logo, redirect it to the home page.

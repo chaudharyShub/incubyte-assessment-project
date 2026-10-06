@@ -1,5 +1,7 @@
+import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { EmployeeListParams, Meta } from '@/api/types';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
@@ -12,6 +14,9 @@ interface Props {
 
 const SEARCH_DEBOUNCE_MS = 300;
 
+/** Everything that narrows the list. Sorting is left alone by a reset. */
+const NO_FILTERS = { search: '', country: '', department: '', level: '', status: '' };
+
 export function EmployeeFilters({ params, meta, onChange }: Props) {
   // The box updates on every keystroke; the list is only asked once typing pauses.
   const [search, setSearch] = useState(params.search);
@@ -22,6 +27,14 @@ export function EmployeeFilters({ params, meta, onChange }: Props) {
     // Only a settled search term should trigger this, not every re-render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
+
+  const filtered =
+    search !== '' || Object.keys(NO_FILTERS).some((key) => params[key as keyof typeof NO_FILTERS]);
+
+  function reset() {
+    setSearch('');
+    onChange(NO_FILTERS);
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -82,6 +95,13 @@ export function EmployeeFilters({ params, meta, onChange }: Props) {
         <NativeSelectOption value="active">Active</NativeSelectOption>
         <NativeSelectOption value="inactive">Inactive</NativeSelectOption>
       </NativeSelect>
+
+      {filtered && (
+        <Button variant="ghost" size="sm" onClick={reset}>
+          <X aria-hidden="true" />
+          Reset filters
+        </Button>
+      )}
     </div>
   );
 }

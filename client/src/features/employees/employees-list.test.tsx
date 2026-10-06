@@ -54,6 +54,20 @@ describe('employee list', () => {
     expect(await screen.findByRole('heading', { name: 'Ben Carter' })).toBeInTheDocument();
   });
 
+  it('is the home page the logo leads back to', async () => {
+    mockSignedInApi({
+      'GET /employees': () => ({ body: aPage([ASHA, BEN]) }),
+      'GET /employees/2': () => ({ body: { employee: BEN } }),
+      'GET /employees/2/salary-history': () => ({ body: { history: [] } }),
+    });
+    renderApp('/employees/2');
+    await screen.findByRole('heading', { name: 'Ben Carter' });
+
+    await userEvent.click(screen.getByRole('link', { name: 'Salary Management' }));
+
+    expect(await screen.findByRole('heading', { name: 'Employees' })).toBeInTheDocument();
+  });
+
   it('asks for the first page sorted by name to begin with', async () => {
     const calls = mockSignedInApi({ 'GET /employees': () => ({ body: aPage([ASHA]) }) });
 
@@ -104,6 +118,34 @@ describe('employee list', () => {
         status: 'inactive',
       }),
     );
+  });
+
+  it('clears the search and every filter with one click, keeping the sort order', async () => {
+    const calls = mockSignedInApi({ 'GET /employees': () => ({ body: aPage([ASHA]) }) });
+    renderApp('/employees?search=rao&country=IN&department=1&level=2&status=active&sort=salary');
+    await screen.findByRole('link', { name: 'Asha Rao' });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reset filters' }));
+
+    await waitFor(() =>
+      expect(lastListQuery(calls)).toEqual({
+        sort: 'salary',
+        order: 'asc',
+        page: '1',
+        pageSize: '25',
+      }),
+    );
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByLabelText('Country')).toHaveValue('');
+    expect(screen.queryByRole('button', { name: 'Reset filters' })).not.toBeInTheDocument();
+  });
+
+  it('offers no reset when nothing is filtered', async () => {
+    mockSignedInApi({ 'GET /employees': () => ({ body: aPage([ASHA]) }) });
+    renderApp('/employees?sort=salary');
+    await screen.findByRole('link', { name: 'Asha Rao' });
+
+    expect(screen.queryByRole('button', { name: 'Reset filters' })).not.toBeInTheDocument();
   });
 
   it('goes back to the first page when a filter changes', async () => {

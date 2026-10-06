@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router';
+import { Link, NavLink, Outlet } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { useLogout, useSession } from '@/features/auth/session';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,10 @@ export function AppLayout() {
     <div className="min-h-screen bg-muted/40">
       <header className="border-b bg-background">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4">
-          <span className="font-semibold">Salary Management</span>
+          {/* The employee list is the home page. */}
+          <Link to="/employees" className="font-semibold">
+            Salary Management
+          </Link>
 
           <nav aria-label="Main" className="flex gap-1">
             {NAV_ITEMS.map(({ to, label }) => (

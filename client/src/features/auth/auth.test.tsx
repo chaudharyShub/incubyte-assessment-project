@@ -18,6 +18,21 @@ describe('signing in', () => {
     expect(screen.queryByRole('heading', { name: 'Employees' })).not.toBeInTheDocument();
   });
 
+  it('shows the password while the eye is switched on, and hides it again', async () => {
+    mockApi({ 'GET /auth/me': signedOut });
+    renderApp('/login');
+    const password = await screen.findByLabelText('Password');
+    await userEvent.type(password, 'secret');
+    expect(password).toHaveAttribute('type', 'password');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Show password' }));
+    expect(password).toHaveAttribute('type', 'text');
+    expect(password).toHaveValue('secret');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Hide password' }));
+    expect(password).toHaveAttribute('type', 'password');
+  });
+
   it('asks for the email and password before calling the server', async () => {
     const calls = mockApi({ 'GET /auth/me': signedOut });
     renderApp('/login');
