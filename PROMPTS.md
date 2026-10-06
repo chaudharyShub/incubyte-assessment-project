@@ -139,3 +139,7 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 ## Prompt 25 — 2026-10-06
 
 >  Now before I begin for video recording, I want couple of ui changes. show active with greenish color and inactive with some redish color. - second: instead of clicking on employee's name only, make the entire row clickable keeping the functionality same. Also there is no cursor:pointer behaviour for the buttons and clickable UI elements, handle that as well.
+
+## Prompt 26 — 2026-10-06
+
+> I would like you to make some changes as well in the application. The app is working but I am feeling like something is missing. First of all add a README file. Then add an employee's salary change history chart in the employee's detail page plus add a peers comparison component showing salary difference against other employees in the same country, like what is the lowest/highest/middle salary range and where does that employee lie.

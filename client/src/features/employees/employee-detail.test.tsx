@@ -1,9 +1,12 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import type { Employee, SalaryRecord } from '@/api/types';
+import type { Employee, PeerComparison, SalaryRecord } from '@/api/types';
 import { anEmployee, mockSignedInApi } from '@/test/fixtures';
 import { apiError, renderApp } from '@/test/render-app';
+// The page loads the chart lazily. Importing it here first means the tests never
+// wait on that download, so their timing does not depend on it.
+import './SalaryHistoryChart';
 
 const BEN = anEmployee({
   id: 7,
@@ -22,6 +25,15 @@ const HISTORY: SalaryRecord[] = [
   { id: 1, amount: '5000.00', currencyCode: 'USD', effectiveDate: '2023-02-01' },
 ];
 
+const PEERS: PeerComparison = {
+  peerCount: 1430,
+  median: '5000.00',
+  min: '3000.00',
+  max: '9000.00',
+  currencyCode: 'USD',
+  differenceFromMedianPercent: 10,
+};
+
 /** A fake API holding one employee, which its write handlers update like the server would. */
 function mockEmployeeApi(
   initial: Employee = BEN,
@@ -32,6 +44,7 @@ function mockEmployeeApi(
   return mockSignedInApi({
     'GET /employees/7': () => ({ body: { employee } }),
     'GET /employees/7/salary-history': () => ({ body: { history } }),
+    'GET /employees/7/peer-comparison': () => ({ body: { comparison: PEERS } }),
     'PATCH /employees/7': (body) => {
       employee = { ...employee, ...(body as Partial<Employee>) };
       return { body: { employee } };
@@ -74,6 +87,65 @@ describe('employee page', () => {
     expect(earlier).toHaveTextContent('1 Feb 2023');
     expect(earlier).toHaveTextContent('$5,000');
     expect(earlier).not.toHaveTextContent('Current');
+  });
+
+  it('shows each salary change as a percentage of the salary before it', async () => {
+    mockEmployeeApi();
+
+    renderApp('/employees/7');
+
+    const rows = within(await screen.findByRole('table')).getAllByRole('row');
+    expect(within(rows[1]!).getByText('+10.0%')).toBeInTheDocument();
+    expect(within(rows[2]!).getByText('Starting salary')).toBeInTheDocument();
+  });
+
+  it('compares the salary with peers in the same country and level', async () => {
+    mockEmployeeApi();
+
+    renderApp('/employees/7');
+
+    expect(await screen.findByText('10.0% above the median')).toBeInTheDocument();
+    expect(
+      screen.getByText('Among 1,430 active Junior employees in United States'),
+    ).toBeInTheDocument();
+    const card = within(screen.getByText('Compared to peers').closest('[data-slot=card]')!);
+    expect(card.getByText('$3,000')).toBeInTheDocument();
+    expect(card.getByText('$5,000')).toBeInTheDocument();
+    expect(card.getByText('$9,000')).toBeInTheDocument();
+  });
+
+  it('says a salary under the median is below it', async () => {
+    mockEmployeeApi(BEN, {
+      'GET /employees/7/peer-comparison': () => ({
+        body: { comparison: { ...PEERS, differenceFromMedianPercent: -12.5 } },
+      }),
+    });
+
+    renderApp('/employees/7');
+
+    expect(await screen.findByText('12.5% below the median')).toBeInTheDocument();
+  });
+
+  it('says so when there are too few peers to compare with', async () => {
+    mockEmployeeApi(BEN, {
+      'GET /employees/7/peer-comparison': () => ({ body: { comparison: null } }),
+    });
+
+    renderApp('/employees/7');
+
+    expect(
+      await screen.findByText(/too few active Junior employees in United States/),
+    ).toBeInTheDocument();
+  });
+
+  it('leaves the peer comparison out for an inactive employee', async () => {
+    const calls = mockEmployeeApi({ ...BEN, status: 'inactive' });
+
+    renderApp('/employees/7');
+
+    await screen.findByRole('heading', { name: 'Ben Carter' });
+    expect(screen.queryByText('Compared to peers')).not.toBeInTheDocument();
+    expect(calls.some((call) => call.path.endsWith('/peer-comparison'))).toBe(false);
   });
 
   it('says so when the employee does not exist', async () => {

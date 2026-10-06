@@ -26,6 +26,7 @@ A single persona: the **HR Manager** of the organisation. They are the only user
 **3. Salary change history**
 - A salary is never overwritten. Each change is saved as a new dated record, so an employee's record shows their current salary and every earlier one.
 - A change's effective date cannot be in the future and must be later than the employee's previous change, so the current salary is always the latest record.
+- The history is shown as a table with the percentage of each change and, once there is more than one record, as a chart over time.
 
 **4. Multiple currencies**
 - Each salary is held and shown in the local currency of the employee's country.
@@ -36,6 +37,7 @@ A single persona: the **HR Manager** of the organisation. They are the only user
 - Average, median, minimum and maximum salary, broken down by country, by department and by level.
 - Shown as tables and charts, in INR.
 - Insights count active employees only.
+- On an employee's record, how their salary compares with their peers: the median, lowest and highest salary among active employees in the same country and level, in local currency. It is not shown for an inactive employee or for a group of fewer than five, where a median says little.
 
 **6. Data**
 - A seed script creates 10,000 employees, plus the HR Manager account and the exchange rates.

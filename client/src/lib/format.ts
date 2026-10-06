@@ -34,6 +34,12 @@ export function formatCompactInr(amount: number): string {
   return compactInr.format(amount);
 }
 
+/** Formats a change between two amounts as a signed percentage, e.g. "+8.0%" or "-2.5%". */
+export function formatPercentChange(from: string, to: string): string {
+  const percent = ((Number(to) - Number(from)) / Number(from)) * 100;
+  return `${percent > 0 ? '+' : ''}${percent.toFixed(1)}%`;
+}
+
 const dateFormat = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'short',

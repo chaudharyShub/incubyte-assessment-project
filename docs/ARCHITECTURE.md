@@ -170,6 +170,7 @@ All routes are under `/api`, exchange JSON, and require a signed-in session exce
 | GET | `/employees/:id` | One employee |
 | PATCH | `/employees/:id` | Edit details or status (not salary or country) |
 | GET | `/employees/:id/salary-history` | Salary records, newest first |
+| GET | `/employees/:id/peer-comparison` | Median, lowest and highest salary among active employees in the same country and level, and how far this salary is from the median. `null` for an inactive employee or a group of fewer than five |
 | POST | `/employees/:id/salary` | Record a salary change: `{ amount, effectiveDate }` |
 | GET | `/insights/summary` | Headcount and total monthly payroll in INR, active employees only |
 | GET | `/insights/salary-stats?groupBy=` | Average, median, min and max monthly salary in INR for active employees, grouped by `country`, `department` or `level` |
@@ -206,7 +207,7 @@ The response carries the rows plus the total count, so the UI can show page numb
 |---|---|
 | Login | Email and password form |
 | Employees | Table with search box, filters, sortable columns and pagination; "Add employee" button |
-| Employee detail | Details, current salary, salary history table; actions to edit, change salary and mark inactive |
+| Employee detail | Details, current salary, comparison with peers, salary history as a chart and a table with the percentage of each change; actions to edit, change salary and mark inactive |
 | Insights | Headcount and total monthly payroll tiles; salary statistics by country, department and level as a chart and a table |
 
 ## Seed script

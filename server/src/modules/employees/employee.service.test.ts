@@ -252,6 +252,80 @@ describe('employee service', () => {
   });
 });
 
+describe('employee service: peer comparison', () => {
+  let service: EmployeeService;
+  let nextPeer = 1;
+
+  beforeEach(() => {
+    service = createEmployeeService({
+      employees: createFakeEmployeeRepository(),
+      meta: createFakeMetaRepository(),
+      now: () => NOW,
+    });
+  });
+
+  /** Adds one employee per salary, all in the same country and level unless overridden. */
+  async function addPeers(salaries: string[], overrides: Parameters<typeof aNewEmployee>[0] = {}) {
+    const added = [];
+    for (const salary of salaries) {
+      const email = `peer${nextPeer++}@example.com`;
+      added.push(await service.create(aNewEmployee({ salary, email, ...overrides })));
+    }
+    return added;
+  }
+
+  it('compares the salary with the median, lowest and highest among peers', async () => {
+    const [lowest] = await addPeers(['60000', '80000', '100000', '120000', '140000']);
+
+    expect(await service.peerComparison(lowest!.id)).toEqual({
+      peerCount: 5,
+      median: '100000.00',
+      min: '60000.00',
+      max: '140000.00',
+      currencyCode: 'INR',
+      differenceFromMedianPercent: -40,
+    });
+  });
+
+  it('reports a salary above the median as a positive difference, to one decimal place', async () => {
+    const peers = await addPeers(['60000', '80000', '90000', '100000', '103333']);
+
+    const comparison = await service.peerComparison(peers.at(-1)!.id);
+
+    expect(comparison!.differenceFromMedianPercent).toBe(14.8);
+  });
+
+  it('counts only active employees in the same country and level as peers', async () => {
+    const [employee] = await addPeers(['60000', '80000', '100000', '120000', '140000']);
+    await addPeers(['900000'], { levelId: 2 });
+    await addPeers(['5000'], { countryCode: 'US' });
+    const [leaver] = await addPeers(['700000']);
+    await service.update(leaver!.id, { status: 'inactive' });
+
+    expect(await service.peerComparison(employee!.id)).toMatchObject({
+      peerCount: 5,
+      max: '140000.00',
+    });
+  });
+
+  it('gives no comparison when there are too few peers for a median to mean much', async () => {
+    const [employee] = await addPeers(['60000', '80000', '100000', '120000']);
+
+    expect(await service.peerComparison(employee!.id)).toBeNull();
+  });
+
+  it('gives no comparison for an inactive employee', async () => {
+    const [employee] = await addPeers(['60000', '80000', '100000', '120000', '140000', '160000']);
+    await service.update(employee!.id, { status: 'inactive' });
+
+    expect(await service.peerComparison(employee!.id)).toBeNull();
+  });
+
+  it('fails with 404 for an employee that does not exist', async () => {
+    await expect(service.peerComparison(999)).rejects.toMatchObject({ status: 404 });
+  });
+});
+
 describe('latestToday', () => {
   it('is the UTC date for most of the day', () => {
     expect(latestToday(new Date('2026-06-15T09:00:00Z'))).toBe('2026-06-15');

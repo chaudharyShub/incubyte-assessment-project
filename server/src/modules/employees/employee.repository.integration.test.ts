@@ -108,6 +108,32 @@ describe('employee repository (PostgreSQL)', () => {
     });
   });
 
+  describe('peerSalaryStats', () => {
+    it('summarises the salaries of active employees in one country and level', async () => {
+      const salaries = db.seeded
+        .filter((e) => e.countryCode === 'IN' && e.levelId === 1 && e.status === 'active')
+        .map((e) => Number(currentSalary(e)))
+        .sort((a, b) => a - b);
+      const middle = salaries.length / 2;
+      const median =
+        salaries.length % 2 === 1
+          ? salaries[Math.floor(middle)]!
+          : (salaries[middle - 1]! + salaries[middle]!) / 2;
+
+      const stats = (await repository.peerSalaryStats('IN', 1))!;
+
+      expect(salaries.length).toBeGreaterThan(1);
+      expect(stats.peerCount).toBe(salaries.length);
+      expect(Number(stats.median)).toBeCloseTo(median, 2);
+      expect(Number(stats.min)).toBe(salaries[0]);
+      expect(Number(stats.max)).toBe(salaries.at(-1));
+    });
+
+    it('returns null when nobody is in the group', async () => {
+      expect(await repository.peerSalaryStats('IN', 999)).toBeNull();
+    });
+  });
+
   describe('writes', () => {
     it('creates an employee together with their first salary record', async () => {
       const id = await repository.create(

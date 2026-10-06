@@ -38,6 +38,11 @@ export function createEmployeeRouter(employees: EmployeeService): Router {
     res.json({ history: await employees.salaryHistory(id) });
   });
 
+  router.get('/:id/peer-comparison', async (req, res) => {
+    const id = validate(employeeIdSchema, req.params.id);
+    res.json({ comparison: await employees.peerComparison(id) });
+  });
+
   router.post('/:id/salary', async (req, res) => {
     const id = validate(employeeIdSchema, req.params.id);
     const change = validate(salaryChangeSchema, req.body);

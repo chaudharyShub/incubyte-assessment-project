@@ -157,6 +157,28 @@ export function createFakeEmployeeRepository(): FakeEmployeeRepository {
       addRecord(employeeId, change.amount, change.effectiveDate);
       employees.get(employeeId)!.salary = change.amount;
     },
+
+    async peerSalaryStats(countryCode, levelId) {
+      const salaries = [...employees.values()]
+        .filter(
+          (e) => e.status === 'active' && e.countryCode === countryCode && e.levelId === levelId,
+        )
+        .map((e) => Number(e.salary))
+        .sort((a, b) => a - b);
+      if (salaries.length === 0) return null;
+
+      const middle = salaries.length / 2;
+      const median =
+        salaries.length % 2 === 1
+          ? salaries[Math.floor(middle)]!
+          : (salaries[middle - 1]! + salaries[middle]!) / 2;
+      return {
+        peerCount: salaries.length,
+        median: median.toFixed(2),
+        min: salaries[0]!.toFixed(2),
+        max: salaries.at(-1)!.toFixed(2),
+      };
+    },
   };
 }
 

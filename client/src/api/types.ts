@@ -37,6 +37,17 @@ export interface SalaryRecord {
   effectiveDate: string;
 }
 
+/** How a salary sits among active employees in the same country and level, in their currency. */
+export interface PeerComparison {
+  peerCount: number;
+  median: string;
+  min: string;
+  max: string;
+  currencyCode: string;
+  /** Negative when the salary is below the peer median. */
+  differenceFromMedianPercent: number;
+}
+
 export interface Meta {
   countries: { code: string; name: string; currencyCode: string }[];
   departments: { id: number; name: string }[];

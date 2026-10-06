@@ -7,6 +7,7 @@ import type {
   EmployeePage,
   Meta,
   NewEmployee,
+  PeerComparison,
   SalaryChange,
   SalaryRecord,
 } from '@/api/types';
@@ -52,6 +53,16 @@ export function useSalaryHistory(id: number) {
     queryKey: ['employees', 'detail', id, 'salary-history'],
     queryFn: async () =>
       (await api<{ history: SalaryRecord[] }>(`/employees/${id}/salary-history`)).history,
+  });
+}
+
+/** Null when the server has no meaningful comparison, for example when there are too few peers. */
+export function usePeerComparison(id: number) {
+  return useQuery({
+    queryKey: ['employees', 'detail', id, 'peer-comparison'],
+    queryFn: async () =>
+      (await api<{ comparison: PeerComparison | null }>(`/employees/${id}/peer-comparison`))
+        .comparison,
   });
 }
 

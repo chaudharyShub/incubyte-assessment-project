@@ -5,6 +5,7 @@ import type {
   EmployeeChanges,
   EmployeeListQuery,
   NewEmployee,
+  PeerSalaryStats,
   SalaryChange,
   SalaryRecord,
 } from './employee.types.js';
@@ -21,6 +22,8 @@ export interface EmployeeRepository {
   salaryHistory(employeeId: number): Promise<SalaryRecord[]>;
   /** Appends a salary record and makes it the employee's current salary. */
   addSalaryChange(employeeId: number, change: SalaryChange): Promise<void>;
+  /** Salary statistics for the active employees in a country and level, or null if there are none. */
+  peerSalaryStats(countryCode: string, levelId: number): Promise<PeerSalaryStats | null>;
 }
 
 const UPDATABLE_COLUMNS: Record<keyof EmployeeChanges, string> = {
@@ -128,6 +131,21 @@ export function createEmployeeRepository(pool: pg.Pool): EmployeeRepository {
          WHERE e.id = new_record.employee_id`,
         [employeeId, change.amount, change.effectiveDate],
       );
+    },
+
+    // Everyone in a country is paid in the same currency, so no conversion is needed.
+    async peerSalaryStats(countryCode, levelId) {
+      const { rows } = await pool.query<PeerSalaryStats>(
+        `SELECT count(*)::int AS "peerCount",
+                round((percentile_cont(0.5) WITHIN GROUP (ORDER BY salary))::numeric, 2) AS median,
+                min(salary) AS min,
+                max(salary) AS max
+         FROM employees
+         WHERE status = 'active' AND country_code = $1 AND level_id = $2`,
+        [countryCode, levelId],
+      );
+      const stats = rows[0]!;
+      return stats.peerCount > 0 ? stats : null;
     },
   };
 }

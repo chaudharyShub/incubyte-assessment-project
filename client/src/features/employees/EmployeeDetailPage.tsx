@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { ApiError } from '@/api/client';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -13,12 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatDate, formatMoney } from '@/lib/format';
+import { formatDate, formatMoney, formatPercentChange } from '@/lib/format';
 import { useEmployee, useMeta, useSalaryHistory } from './api';
 import { ChangeSalaryDialog } from './ChangeSalaryDialog';
 import { EmployeeFormDialog } from './EmployeeFormDialog';
+import { PeerComparisonCard } from './PeerComparisonCard';
 import { StatusBadge } from './StatusBadge';
 import { StatusDialog } from './StatusDialog';
+
+// The charting library is large, so it is only downloaded when there is a chart to draw.
+const SalaryHistoryChart = lazy(() =>
+  import('./SalaryHistoryChart').then((module) => ({ default: module.SalaryHistoryChart })),
+);
 
 type OpenDialog = 'edit' | 'salary' | 'status' | null;
 
@@ -135,14 +141,23 @@ export function EmployeeDetailPage() {
         </Card>
       </div>
 
+      {/* Peers are active employees, so an inactive employee has nobody to be compared with. */}
+      {active && <PeerComparisonCard employee={employee} />}
+
       <Card>
         <CardHeader>
           <CardTitle>Salary history</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="grid gap-4">
           {history.isPending && <Skeleton className="h-24 w-full" />}
           {history.isError && (
             <p className="text-sm text-destructive">We could not load the salary history.</p>
+          )}
+          {/* A single record is one flat line, which says nothing the table does not. */}
+          {history.data && history.data.length > 1 && (
+            <Suspense fallback={<Skeleton className="h-50 w-full" />}>
+              <SalaryHistoryChart history={history.data} />
+            </Suspense>
           )}
           {history.data && (
             <Table>
@@ -150,22 +165,31 @@ export function EmployeeDetailPage() {
                 <TableRow>
                   <TableHead>Effective from</TableHead>
                   <TableHead className="text-right">Monthly salary</TableHead>
+                  <TableHead className="text-right">Change</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {history.data.map((record, index) => (
-                  <TableRow key={record.id}>
-                    <TableCell>
-                      {formatDate(record.effectiveDate)}
-                      {index === 0 && (
-                        <span className="ml-2 text-xs text-muted-foreground">Current</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatMoney(record.amount, record.currencyCode)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {history.data.map((record, index) => {
+                  const previous = history.data[index + 1];
+                  return (
+                    <TableRow key={record.id}>
+                      <TableCell>
+                        {formatDate(record.effectiveDate)}
+                        {index === 0 && (
+                          <span className="ml-2 text-xs text-muted-foreground">Current</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatMoney(record.amount, record.currencyCode)}
+                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground tabular-nums">
+                        {previous
+                          ? formatPercentChange(previous.amount, record.amount)
+                          : 'Starting salary'}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatCompactInr, formatDate, formatMoney, todayIsoDate } from './format';
+import {
+  formatCompactInr,
+  formatDate,
+  formatMoney,
+  formatPercentChange,
+  todayIsoDate,
+} from './format';
 
 describe('formatMoney', () => {
   it('groups rupees the Indian way, in lakhs', () => {
@@ -31,6 +37,17 @@ describe('formatCompactInr', () => {
     [0, '₹0'],
   ])('writes %d as %s', (amount, expected) => {
     expect(formatCompactInr(amount)).toBe(expected);
+  });
+});
+
+describe('formatPercentChange', () => {
+  it('marks a raise with a plus sign, to one decimal place', () => {
+    expect(formatPercentChange('5000.00', '5500.00')).toBe('+10.0%');
+    expect(formatPercentChange('80000.00', '86500.00')).toBe('+8.1%');
+  });
+
+  it('shows a pay cut as negative', () => {
+    expect(formatPercentChange('5000.00', '4875.00')).toBe('-2.5%');
   });
 });
 

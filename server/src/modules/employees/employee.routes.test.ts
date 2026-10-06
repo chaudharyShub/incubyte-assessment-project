@@ -31,6 +31,7 @@ describe('employee routes', () => {
       ['PATCH', '/api/employees/1'],
       ['GET', '/api/employees/1/salary-history'],
       ['POST', '/api/employees/1/salary'],
+      ['GET', '/api/employees/1/peer-comparison'],
       ['GET', '/api/meta'],
     ])('%s %s returns 401', async (method, path) => {
       const response = await request(app)[method.toLowerCase() as 'get' | 'post' | 'patch'](path);
@@ -283,6 +284,43 @@ describe('employee routes', () => {
 
     it('returns 404 for an employee that does not exist', async () => {
       const response = await get('/api/employees/999/salary-history');
+
+      expect(response.status).toBe(404);
+    });
+  });
+
+  describe('GET /api/employees/:id/peer-comparison', () => {
+    it('returns how the salary compares with peers in the same country and level', async () => {
+      const salaries = ['60000', '80000', '100000', '120000', '140000'];
+      const ids = [];
+      for (const [i, salary] of salaries.entries()) {
+        ids.push(await repository.create(aNewEmployee({ salary, email: `peer${i}@example.com` })));
+      }
+
+      const response = await get(`/api/employees/${ids[4]}/peer-comparison`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.comparison).toEqual({
+        peerCount: 5,
+        median: '100000.00',
+        min: '60000.00',
+        max: '140000.00',
+        currencyCode: 'INR',
+        differenceFromMedianPercent: 40,
+      });
+    });
+
+    it('returns a null comparison when there are too few peers', async () => {
+      const id = await repository.create(aNewEmployee());
+
+      const response = await get(`/api/employees/${id}/peer-comparison`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.comparison).toBeNull();
+    });
+
+    it('returns 404 for an employee that does not exist', async () => {
+      const response = await get('/api/employees/999/peer-comparison');
 
       expect(response.status).toBe(404);
     });

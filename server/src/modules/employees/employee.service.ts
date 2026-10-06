@@ -7,6 +7,7 @@ import type {
   EmployeeListQuery,
   EmployeePage,
   NewEmployee,
+  PeerComparison,
   SalaryChange,
   SalaryRecord,
 } from './employee.types.js';
@@ -18,6 +19,8 @@ export interface EmployeeService {
   update(id: number, changes: EmployeeChanges): Promise<Employee>;
   salaryHistory(id: number): Promise<SalaryRecord[]>;
   changeSalary(id: number, change: SalaryChange): Promise<Employee>;
+  /** Null when a comparison would not mean much: the employee is inactive, or has too few peers. */
+  peerComparison(id: number): Promise<PeerComparison | null>;
 }
 
 export interface EmployeeServiceDependencies {
@@ -30,6 +33,9 @@ export interface EmployeeServiceDependencies {
 type FieldErrors = Record<string, string[]>;
 
 const HOURS_AHEAD_OF_UTC = 14;
+
+/** Below this many people, a median says more about individuals than about the group. */
+export const MIN_PEER_GROUP_SIZE = 5;
 
 /**
  * The latest calendar date that is "today" anywhere in the world. The server
@@ -139,6 +145,22 @@ export function createEmployeeService({
 
       await employees.addSalaryChange(id, change);
       return get(id);
+    },
+
+    async peerComparison(id) {
+      const employee = await get(id);
+      if (employee.status === 'inactive') return null;
+
+      const stats = await employees.peerSalaryStats(employee.countryCode, employee.levelId);
+      if (!stats || stats.peerCount < MIN_PEER_GROUP_SIZE) return null;
+
+      const median = Number(stats.median);
+      return {
+        ...stats,
+        currencyCode: employee.currencyCode,
+        differenceFromMedianPercent:
+          Math.round(((Number(employee.salary) - median) / median) * 1000) / 10,
+      };
     },
   };
 }
