@@ -1,7 +1,10 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import { aPage, mockSignedInApi } from '@/test/fixtures';
 import { apiError, mockApi, renderApp, TEST_USER } from '@/test/render-app';
+
+const emptyList = () => ({ body: aPage([]) });
 
 const signedOut = () => apiError(401, 'UNAUTHENTICATED', 'Sign in to continue');
 
@@ -27,17 +30,19 @@ describe('signing in', () => {
   });
 
   it('signs in and opens the page the visitor originally asked for', async () => {
-    const calls = mockApi({
+    const calls = mockSignedInApi({
       'GET /auth/me': signedOut,
       'POST /auth/login': () => ({ body: { user: TEST_USER } }),
+      'GET /employees': emptyList,
     });
-    renderApp('/insights');
+    renderApp('/employees?country=IN');
 
     await userEvent.type(await screen.findByLabelText('Email'), 'hr@example.com');
     await userEvent.type(screen.getByLabelText('Password'), 'correct-password');
     await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
-    expect(await screen.findByRole('heading', { name: 'Insights' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Employees' })).toBeInTheDocument();
+    expect(await screen.findByLabelText('Country')).toHaveValue('IN');
     expect(calls).toContainEqual({
       method: 'POST',
       path: '/auth/login',
@@ -64,7 +69,7 @@ describe('signing in', () => {
 
 describe('when signed in', () => {
   it('shows the page with navigation and the name of the user', async () => {
-    mockApi({ 'GET /auth/me': () => ({ body: { user: TEST_USER } }) });
+    mockSignedInApi({ 'GET /employees': emptyList });
 
     renderApp('/employees');
 
@@ -74,7 +79,7 @@ describe('when signed in', () => {
   });
 
   it('skips the login page', async () => {
-    mockApi({ 'GET /auth/me': () => ({ body: { user: TEST_USER } }) });
+    mockSignedInApi({ 'GET /employees': emptyList });
 
     renderApp('/login');
 
@@ -82,8 +87,8 @@ describe('when signed in', () => {
   });
 
   it('returns to the login page after signing out', async () => {
-    mockApi({
-      'GET /auth/me': () => ({ body: { user: TEST_USER } }),
+    mockSignedInApi({
+      'GET /employees': emptyList,
       'POST /auth/logout': () => ({ status: 204 }),
     });
     renderApp('/employees');

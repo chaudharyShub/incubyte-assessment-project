@@ -1,16 +1,37 @@
+interface MoneyOptions {
+  /** `false` rounds to whole units; by default decimals are shown only when the amount has any. */
+  decimals?: boolean;
+}
+
 /**
  * Formats a decimal string as money, e.g. "₹1,06,500" or "$4,200.50".
- * Rupees use Indian digit grouping; decimals are shown only when there are any.
+ * Rupees use Indian digit grouping.
  */
-export function formatMoney(amount: string, currencyCode: string): string {
+export function formatMoney(
+  amount: string,
+  currencyCode: string,
+  { decimals = true }: MoneyOptions = {},
+): string {
   const value = Number(amount);
-  const fractionDigits = Number.isInteger(value) ? 0 : 2;
+  const fractionDigits = !decimals || Number.isInteger(value) ? 0 : 2;
   return new Intl.NumberFormat(currencyCode === 'INR' ? 'en-IN' : 'en-US', {
     style: 'currency',
     currency: currencyCode,
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   }).format(value);
+}
+
+const compactInr = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  notation: 'compact',
+  maximumFractionDigits: 2,
+});
+
+/** Formats rupees in thousands, lakhs and crores, e.g. "₹86.5K", "₹1.06L", "₹374.81Cr". */
+export function formatCompactInr(amount: number): string {
+  return compactInr.format(amount);
 }
 
 const dateFormat = new Intl.DateTimeFormat('en-GB', {

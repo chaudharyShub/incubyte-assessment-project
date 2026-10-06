@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate, formatMoney, todayIsoDate } from './format';
+import { formatCompactInr, formatDate, formatMoney, todayIsoDate } from './format';
 
 describe('formatMoney', () => {
   it('groups rupees the Indian way, in lakhs', () => {
@@ -14,6 +14,23 @@ describe('formatMoney', () => {
   it('shows two decimals only when the amount has a fractional part', () => {
     expect(formatMoney('4200.50', 'GBP')).toBe('£4,200.50');
     expect(formatMoney('4200.00', 'GBP')).toBe('£4,200');
+  });
+});
+
+describe('formatMoney without decimals', () => {
+  it('rounds to whole units', () => {
+    expect(formatMoney('106159.25', 'INR', { decimals: false })).toBe('₹1,06,159');
+  });
+});
+
+describe('formatCompactInr', () => {
+  it.each([
+    [86500, '₹86.5K'],
+    [106159, '₹1.06L'],
+    [3748093400, '₹374.81Cr'],
+    [0, '₹0'],
+  ])('writes %d as %s', (amount, expected) => {
+    expect(formatCompactInr(amount)).toBe(expected);
   });
 });
 

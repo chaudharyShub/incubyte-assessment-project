@@ -6,3 +6,10 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
+
+// jsdom has no layout engine, so it lacks ResizeObserver, which the charts use to size themselves.
+globalThis.ResizeObserver ??= class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
