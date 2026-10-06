@@ -131,3 +131,8 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 ## Prompt 23 — 2026-10-06
 
 > I have created a github repo and connected it to vercel, we are good to do for the deployment. Let's proceed.
+
+## Prompt 24 — 2026-10-06
+
+> The deployment is done, and I have set the environment variables as well. Here is the url: "https://incubyte-shubham.vercel.app" have a look at it
+
