@@ -15,6 +15,24 @@ Sign-in details for the demo HR Manager account are shared with the submission. 
 - **Multiple currencies** — each salary is held and shown in the local currency of the employee's country (INR, USD, GBP, EUR, SGD), with its INR equivalent beside it.
 - **Insights** — headcount, total monthly payroll, and average, median, minimum and maximum salary by country, department and level, as tables and charts in INR.
 
+## Screenshots
+
+**Sign in**
+
+![Sign-in page](docs/screenshots/incubyte-project-1.png)
+
+**Employees**
+
+![Employee list with search, filters and sorting](docs/screenshots/incubyte-project-2.png)
+
+**Insights**
+
+![Insights page with headcount, payroll and salary by country](docs/screenshots/incubyte-project-3.png)
+
+**Employee record**
+
+![Employee record with peer comparison and salary history](docs/screenshots/incubyte-project-4.png)
+
 ## Documents
 
 | Document | What it covers |
