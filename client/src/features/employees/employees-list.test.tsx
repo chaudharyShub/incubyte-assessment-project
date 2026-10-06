@@ -39,6 +39,21 @@ describe('employee list', () => {
     expect(within(ben).getByText('Inactive')).toBeInTheDocument();
   });
 
+  it('opens an employee when any part of their row is clicked', async () => {
+    mockSignedInApi({
+      'GET /employees': () => ({ body: aPage([ASHA, BEN]) }),
+      'GET /employees/2': () => ({ body: { employee: BEN } }),
+      'GET /employees/2/salary-history': () => ({ body: { history: [] } }),
+    });
+
+    renderApp('/employees');
+    const ben = (await screen.findByRole('link', { name: 'Ben Carter' })).closest('tr')!;
+
+    await userEvent.click(within(ben).getByText('United States'));
+
+    expect(await screen.findByRole('heading', { name: 'Ben Carter' })).toBeInTheDocument();
+  });
+
   it('asks for the first page sorted by name to begin with', async () => {
     const calls = mockSignedInApi({ 'GET /employees': () => ({ body: aPage([ASHA]) }) });
 

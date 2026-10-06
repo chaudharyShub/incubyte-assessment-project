@@ -136,3 +136,6 @@ _Note: this prompt is verbatim except for the password, which was redacted at my
 
 > The deployment is done, and I have set the environment variables as well. Here is the url: "https://incubyte-shubham.vercel.app" have a look at it
 
+## Prompt 25 — 2026-10-06
+
+>  Now before I begin for video recording, I want couple of ui changes. show active with greenish color and inactive with some redish color. - second: instead of clicking on employee's name only, make the entire row clickable keeping the functionality same. Also there is no cursor:pointer behaviour for the buttons and clickable UI elements, handle that as well.

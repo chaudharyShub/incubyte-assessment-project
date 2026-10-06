@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import type { Employee, EmployeeSort, SortOrder } from '@/api/types';
 import {
   Table,
@@ -23,6 +23,8 @@ interface Props {
 const ARIA_SORT = { asc: 'ascending', desc: 'descending' } as const;
 
 export function EmployeeTable({ employees, sort, order, onSort }: Props) {
+  const navigate = useNavigate();
+
   function sortableHead(column: EmployeeSort, label: string, className?: string): ReactNode {
     const active = sort === column;
     const Icon = !active ? ArrowUpDown : order === 'asc' ? ArrowUp : ArrowDown;
@@ -57,7 +59,15 @@ export function EmployeeTable({ employees, sort, order, onSort }: Props) {
       </TableHeader>
       <TableBody>
         {employees.map((employee) => (
-          <TableRow key={employee.id}>
+          <TableRow
+            key={employee.id}
+            className="cursor-pointer"
+            onClick={(event) => {
+              // The name stays a real link, for keyboard and new-tab use, and handles its own clicks.
+              if (event.target instanceof Element && event.target.closest('a')) return;
+              navigate(`/employees/${employee.id}`);
+            }}
+          >
             <TableCell>
               <Link
                 to={`/employees/${employee.id}`}
